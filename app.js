@@ -104,6 +104,7 @@ const characterAssetTemplate = document.querySelector("#catAssetTemplate");
 const floatingActions = document.querySelector(".floating-actions");
 
 let readingTimer = null;
+let readingActiveTimer = null;
 
 init();
 
@@ -319,7 +320,8 @@ function speakPhrase(phrase) {
   animateExcited();
   setCharacterMood(phrase.mood);
   setReadingMode(true);
-  startReadingTextEffect(phrase.text);
+  const preset = currentVoicePreset();
+  startReadingTextEffect(phrase.text, preset.rate);
 
   if (!("speechSynthesis" in window) || !("SpeechSynthesisUtterance" in window)) {
     window.setTimeout(() => {
@@ -331,7 +333,6 @@ function speakPhrase(phrase) {
   }
 
   const utterance = new SpeechSynthesisUtterance(phrase.text);
-  const preset = currentVoicePreset();
   utterance.lang = "zh-CN";
   utterance.rate = preset.rate;
   utterance.pitch = preset.pitch;
@@ -400,11 +401,12 @@ function setReadingMode(isReading) {
   speechBubble.classList.toggle("is-hidden", isReading);
 }
 
-function startReadingTextEffect(text) {
+function startReadingTextEffect(text, rate = 1) {
   stopReadingTextEffect();
   const chars = Array.from(text.replace(/\s+/g, ""));
   readingText.innerHTML = "";
   readingText.classList.add("is-visible");
+  readingText.classList.add("has-trail");
 
   chars.forEach((char) => {
     const span = document.createElement("span");
@@ -415,6 +417,7 @@ function startReadingTextEffect(text) {
 
   const nodes = Array.from(readingText.children);
   let index = 0;
+  const intervalMs = Math.max(55, Math.round(120 / Math.max(rate, 0.75)));
   readingTimer = window.setInterval(() => {
     if (index >= nodes.length) {
       window.clearInterval(readingTimer);
@@ -422,8 +425,9 @@ function startReadingTextEffect(text) {
       return;
     }
     nodes[index].classList.add("is-on");
+    nodes.forEach((node, nodeIndex) => node.classList.toggle("is-active", nodeIndex === index));
     index += 1;
-  }, 90);
+  }, intervalMs);
 }
 
 function stopReadingTextEffect() {
@@ -431,7 +435,12 @@ function stopReadingTextEffect() {
     window.clearInterval(readingTimer);
     readingTimer = null;
   }
+  if (readingActiveTimer) {
+    window.clearTimeout(readingActiveTimer);
+    readingActiveTimer = null;
+  }
   readingText.classList.remove("is-visible");
+  readingText.classList.remove("has-trail");
   readingText.innerHTML = "";
 }
 
