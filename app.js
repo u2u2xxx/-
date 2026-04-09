@@ -80,11 +80,11 @@ const state = {
 
 const catButton = document.querySelector("#catButton");
 const catImage = document.querySelector("#catImage");
-const moodPill = document.querySelector("#moodPill");
 const drawButton = document.querySelector("#drawButton");
 const candidateList = document.querySelector("#candidateList");
 const speechText = document.querySelector("#speechText");
 const speechBubble = document.querySelector("#speechBubble");
+const readingText = document.querySelector("#readingText");
 const phraseForm = document.querySelector("#phraseForm");
 const catForm = document.querySelector("#catForm");
 const customPhraseInput = document.querySelector("#customPhrase");
@@ -101,6 +101,9 @@ const drawerCloseButton = document.querySelector("#drawerCloseButton");
 const drawerScrim = document.querySelector("#drawerScrim");
 const candidateTemplate = document.querySelector("#candidateTemplate");
 const characterAssetTemplate = document.querySelector("#catAssetTemplate");
+const floatingActions = document.querySelector(".floating-actions");
+
+let readingTimer = null;
 
 init();
 
@@ -315,8 +318,14 @@ function speakPhrase(phrase) {
   updateSpeech(phrase.text);
   animateExcited();
   setCharacterMood(phrase.mood);
+  setReadingMode(true);
+  startReadingTextEffect(phrase.text);
 
   if (!("speechSynthesis" in window) || !("SpeechSynthesisUtterance" in window)) {
+    window.setTimeout(() => {
+      stopReadingTextEffect();
+      setReadingMode(false);
+    }, 1800);
     updateSpeech(`${phrase.text}（当前浏览器不支持语音播放。）`);
     return;
   }
@@ -338,10 +347,14 @@ function speakPhrase(phrase) {
 
   utterance.onend = () => {
     catButton.classList.remove("is-speaking");
+    stopReadingTextEffect();
+    setReadingMode(false);
   };
 
   utterance.onerror = () => {
     catButton.classList.remove("is-speaking");
+    stopReadingTextEffect();
+    setReadingMode(false);
     updateSpeech(`${phrase.text}（语音这次没有成功播出来。）`);
   };
 
@@ -350,6 +363,8 @@ function speakPhrase(phrase) {
 
 function stopSpeaking() {
   catButton.classList.remove("is-speaking");
+  stopReadingTextEffect();
+  setReadingMode(false);
   if ("speechSynthesis" in window) {
     window.speechSynthesis.cancel();
   }
@@ -364,7 +379,6 @@ function updateSpeech(text) {
 
 function setCharacterMood(mood) {
   const meta = moodMeta[mood] ?? moodMeta.playful;
-  moodPill.textContent = meta.stageLabel;
   applySelectedCharacterImage(meta.image);
 }
 
@@ -378,6 +392,47 @@ function animateExcited() {
   void catButton.offsetWidth;
   catButton.classList.add("is-excited");
   window.setTimeout(() => catButton.classList.remove("is-excited"), 1400);
+}
+
+function setReadingMode(isReading) {
+  candidateList.classList.toggle("is-hidden", isReading);
+  floatingActions.classList.toggle("is-hidden", isReading);
+  speechBubble.classList.toggle("is-hidden", isReading);
+}
+
+function startReadingTextEffect(text) {
+  stopReadingTextEffect();
+  const chars = Array.from(text.replace(/\s+/g, ""));
+  readingText.innerHTML = "";
+  readingText.classList.add("is-visible");
+
+  chars.forEach((char) => {
+    const span = document.createElement("span");
+    span.className = "reading-char";
+    span.textContent = char;
+    readingText.appendChild(span);
+  });
+
+  const nodes = Array.from(readingText.children);
+  let index = 0;
+  readingTimer = window.setInterval(() => {
+    if (index >= nodes.length) {
+      window.clearInterval(readingTimer);
+      readingTimer = null;
+      return;
+    }
+    nodes[index].classList.add("is-on");
+    index += 1;
+  }, 90);
+}
+
+function stopReadingTextEffect() {
+  if (readingTimer) {
+    window.clearInterval(readingTimer);
+    readingTimer = null;
+  }
+  readingText.classList.remove("is-visible");
+  readingText.innerHTML = "";
 }
 
 function openDrawer() {
