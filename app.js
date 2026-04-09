@@ -1,60 +1,77 @@
-const STORAGE_KEY = "sayhi-custom-phrases-v2";
-const CAT_ASSET_KEY = "sayhi-cat-assets-v2";
-const SELECTED_CAT_ASSET_KEY = "sayhi-selected-cat-asset-v1";
-const VOICE_KEY = "sayhi-voice-selection-v3";
+const STORAGE_KEY = "sayhi-custom-phrases-v3";
+const CAT_ASSET_KEY = "sayhi-character-assets-v3";
+const SELECTED_CAT_ASSET_KEY = "sayhi-selected-character-asset-v1";
+const VOICE_KEY = "sayhi-voice-selection-v4";
 
 const voicePresets = [
-  { id: "xiaoxin", label: "蜡笔小新腔", hint: "顽皮松弛，适合轻松整活。", rate: 0.9, pitch: 1.32, volume: 1 },
-  { id: "wukong", label: "西游悟空腔", hint: "灵动有冲劲，适合热闹直球。", rate: 1.06, pitch: 1.18, volume: 1 },
-  { id: "host", label: "主持播音腔", hint: "稳一点，像有人替你把开场端住。", rate: 0.98, pitch: 1.02, volume: 1 },
-  { id: "loli", label: "软萌萝莉腔", hint: "更轻更甜，适合温柔破冰。", rate: 0.95, pitch: 1.45, volume: 1 },
-  { id: "boss", label: "霸道总裁腔", hint: "更低更稳，适合强势一点的出场。", rate: 0.92, pitch: 0.86, volume: 1 },
-  { id: "documentary", label: "纪录解说腔", hint: "一本正经地说土味情话，反差感更强。", rate: 0.9, pitch: 0.98, volume: 1 }
+  { id: "loli", label: "萝莉音", hint: "轻甜元气，适合软萌开场。", rate: 0.96, pitch: 1.44, volume: 1 },
+  { id: "boss", label: "霸总音", hint: "低稳直给，适合强势一点的出场。", rate: 0.92, pitch: 0.84, volume: 1 },
+  { id: "wukong", label: "猴哥音", hint: "灵动冲劲，适合带点玩笑感。", rate: 1.06, pitch: 1.16, volume: 1 },
+  { id: "host", label: "主持音", hint: "大方清楚，像有人替你稳稳开场。", rate: 0.98, pitch: 1.03, volume: 1 },
+  { id: "yujie", label: "御姐音", hint: "成熟利落，适合松弛自信的问候。", rate: 0.95, pitch: 1.08, volume: 1 },
+  { id: "dongbei", label: "东北音", hint: "热闹外放，适合幽默打招呼。", rate: 1.03, pitch: 1.02, volume: 1 },
+  { id: "guangxi", label: "广西老表音", hint: "亲切带梗，适合轻松破冰。", rate: 0.99, pitch: 1.05, volume: 1 },
+  { id: "gangpu", label: "港普音", hint: "俏皮又有辨识度，适合趣味开场。", rate: 1, pitch: 1.12, volume: 1 }
+];
+
+const builtinCharacterAssets = [
+  { id: "builtin-labubu-01", name: "Labubu 橘子兔", src: "./assets/labubu-01.gif" },
+  { id: "builtin-labubu-02", name: "Labubu 草莓兔", src: "./assets/labubu-02.gif" },
+  { id: "builtin-minion-01", name: "小黄人惊讶", src: "./assets/minion-01.gif" },
+  { id: "builtin-minion-02", name: "小黄人酷脸", src: "./assets/minion-02.webp" },
+  { id: "builtin-cinnamoroll-01", name: "玉桂狗爱心", src: "./assets/cinnamoroll-01.gif" },
+  { id: "builtin-cinnamoroll-02", name: "玉桂狗星星", src: "./assets/cinnamoroll-02.gif" },
+  { id: "builtin-kuromi-01", name: "库洛米闪亮", src: "./assets/kuromi-01.gif" },
+  { id: "builtin-kuromi-02", name: "库洛米心动", src: "./assets/kuromi-02.gif" },
+  { id: "builtin-mickey-01", name: "米老鼠墨镜", src: "./assets/mickey-01.gif" },
+  { id: "builtin-mickey-02", name: "米老鼠大笑", src: "./assets/mickey-02.webp" },
+  { id: "builtin-dayanji-01", name: "大湾鸡双人舞", src: "./assets/dayanji-01.gif" },
+  { id: "builtin-dayanji-02", name: "大湾鸡巡场", src: "./assets/dayanji-02.webp" }
 ];
 
 const moodMeta = {
-  soft: { stageLabel: "当前状态：软萌贴贴猫", image: "./assets/cat-soft.gif" },
-  playful: { stageLabel: "当前状态：淡定整活猫", image: "./assets/cat-neutral.gif" },
-  bold: { stageLabel: "当前状态：冲锋出击猫", image: "./assets/cat-bold.gif" }
+  soft: { stageLabel: "当前状态：温柔打招呼", image: "./assets/labubu-01.gif" },
+  playful: { stageLabel: "当前状态：轻松破冰中", image: "./assets/minion-01.gif" },
+  bold: { stageLabel: "当前状态：主动出击中", image: "./assets/kuromi-02.gif" }
 };
 
 const builtinPhrases = [
-  { text: "你好，刚见面我就觉得今天的好心情像是你带来的。", mood: "soft" },
-  { text: "我本来只打算礼貌地打个招呼，结果一见你就想顺便心动一下。", mood: "soft" },
-  { text: "如果今天的相遇有个主题，那大概叫做刚好看见你。", mood: "soft" },
-  { text: "你一出现，我连开场白都想说得认真一点。", mood: "soft" },
-  { text: "你好呀，希望我们今天这句开场，能变成以后很多句聊天。", mood: "soft" },
-  { text: "刚见到你，我就觉得今天适合多聊一会儿。", mood: "soft" },
-  { text: "我刚刚还在想怎么不尴尬地开口，现在看到你，好像笑一下就够了。", mood: "soft" },
-  { text: "你看起来有种很特别的本事，能把初次见面的紧张变成期待。", mood: "soft" },
-  { text: "见到你之后，我突然理解了什么叫做氛围感本人。", mood: "soft" },
-  { text: "我原本只是路过一下，现在有点想认真认识你一下。", mood: "soft" },
-  { text: "你是不是偷偷改了我的天气预报，不然我怎么一见你就晴了。", mood: "playful" },
-  { text: "你好，我想确认一件事，你是不是负责让人第一眼就想聊天的。", mood: "playful" },
-  { text: "你知道我为什么突然站直了吗，因为礼貌和心动同时上线了。", mood: "playful" },
-  { text: "本来我想正常打招呼，结果脑子里先弹出一句你好可爱。", mood: "playful" },
-  { text: "你今天是不是带了什么隐藏技能，怎么一出现就把气氛救活了。", mood: "playful" },
-  { text: "我刚才路过的时候还挺淡定，看到你之后就想申请多停留几分钟。", mood: "playful" },
-  { text: "见到你之前，我还挺会聊天的，见到你之后只剩一句你好厉害。", mood: "playful" },
-  { text: "如果今天破冰要选代言人，我觉得你已经赢了。", mood: "playful" },
-  { text: "你好，我怀疑你有点过分，因为你过分让人想认识。", mood: "playful" },
-  { text: "你一来，我连社交电量都突然恢复到满格了。", mood: "playful" },
-  { text: "你知道我今天为什么状态这么好吗，因为刚好遇见了你。", mood: "bold" },
-  { text: "别的招呼都太普通了，我想直接说一句，你让我挺想继续认识的。", mood: "bold" },
-  { text: "我刚才只看了你一眼，心里已经自动把下一句聊天想好了。", mood: "bold" },
-  { text: "如果心动有提醒音，我刚刚应该已经连响好几下了。", mood: "bold" },
-  { text: "我发现一件事，第一次见面也可以有一点点偏爱。", mood: "bold" },
-  { text: "今天本来是普通的一天，直到我看见你，剧情才像刚开始。", mood: "bold" },
-  { text: "如果我现在夸你很让人心动，算不算一种坦白从宽。", mood: "bold" },
-  { text: "我觉得我们这次见面挺不简单的，至少我的注意力已经被你拿走了。", mood: "bold" },
-  { text: "你好，我想先打个招呼，再问问你愿不愿意把我列入熟人范围。", mood: "bold" },
-  { text: "我知道这样说有点直球，但你真的很适合被认真认识。", mood: "bold" }
+  { text: "你好！我正在做一个小调查：你觉得在地铁站搭讪奇怪吗？", mood: "playful" },
+  { text: "你好，我正要去做一件疯狂的事，和陌生人聊天。", mood: "playful" },
+  { text: "请问你知道现在几点了吗？没错，是适合认识一下的时刻。", mood: "soft" },
+  { text: "嘿，我觉得你看起来很面善，我们是不是见过？", mood: "playful" },
+  { text: "嗨，你的气质很特别，忍不住想认识一下。", mood: "soft" },
+  { text: "嘿，你的穿搭很有风格，忍不住想过来夸一下。", mood: "soft" },
+  { text: "嗨，我刚在那边看到你笑，觉得整个世界都亮了。", mood: "soft" },
+  { text: "你好！我正在收集城市里最有趣的人的故事。", mood: "playful" },
+  { text: "你好，我和朋友打赌说我敢来和你聊天，能帮我赢吗？", mood: "playful" },
+  { text: "嗨，我刚才在那边看到你，觉得如果不过来打个招呼可能会后悔一整天。", mood: "bold" },
+  { text: "你好，我路过的时候看到你，突然觉得今天值得认真一点。", mood: "soft" },
+  { text: "嗨，冒昧打扰一下，我只是想说你给人的感觉很舒服。", mood: "soft" },
+  { text: "你好，我本来准备直接走过去，但还是觉得应该来打个招呼。", mood: "soft" },
+  { text: "嘿，你看起来像会把无聊聊天也变得有意思的人。", mood: "playful" },
+  { text: "嗨，如果今天适合认识一个新朋友，我觉得应该就是现在。", mood: "soft" },
+  { text: "你好，我想了半天开场白，最后还是觉得直接打招呼最真诚。", mood: "soft" },
+  { text: "嘿，我刚刚经过的时候就在想，不打招呼是不是有点可惜。", mood: "bold" },
+  { text: "你好，你的状态看起来特别好，连我都被感染到了。", mood: "soft" },
+  { text: "嗨，我通常没这么主动，但你让我想破个例。", mood: "bold" },
+  { text: "你好，想认识你这件事，我刚刚已经在心里排练两遍了。", mood: "playful" },
+  { text: "嘿，我感觉你应该是那种很会聊天的人，要不要验证一下？", mood: "playful" },
+  { text: "你好，我想先和你打个招呼，再决定今天是不是幸运的一天。", mood: "soft" },
+  { text: "嗨，你给人的第一感觉很加分，所以我决定过来认识一下。", mood: "bold" },
+  { text: "你好，如果我的出现有点突然，那就当我在认真执行社交计划。", mood: "playful" },
+  { text: "嘿，我刚给自己下了个任务：遇到想认识的人就别犹豫。", mood: "bold" },
+  { text: "你好，我想借一个开场机会，换一个认识你的可能。", mood: "soft" },
+  { text: "嗨，我发现你很容易让人注意到，所以我决定不装作没看见。", mood: "bold" },
+  { text: "你好，我本来只想安静路过，但你的存在感实在太强了。", mood: "playful" },
+  { text: "嘿，先别紧张，我只是想和今天最有眼缘的人打个招呼。", mood: "playful" },
+  { text: "嗨，如果我现在来认识你，算不算今天一个不错的决定？", mood: "bold" }
 ];
 
 const state = {
   customPhrases: loadCustomPhrases(),
-  catAssets: loadCatAssets(),
-  selectedCatAssetId: loadSelectedCatAssetId(),
+  characterAssets: loadCharacterAssets(),
+  selectedCharacterAssetId: loadSelectedCharacterAssetId(),
   currentCandidates: [],
   activePhraseId: "",
   voice: null,
@@ -73,41 +90,46 @@ const catForm = document.querySelector("#catForm");
 const customPhraseInput = document.querySelector("#customPhrase");
 const customMoodInput = document.querySelector("#customMood");
 const catFileInput = document.querySelector("#catFile");
-const catAssetList = document.querySelector("#catAssetList");
-const catAssetCount = document.querySelector("#catAssetCount");
+const characterAssetList = document.querySelector("#catAssetList");
+const characterAssetCount = document.querySelector("#catAssetCount");
 const voicePresetSelect = document.querySelector("#voicePresetSelect");
 const voicePresetHint = document.querySelector("#voicePresetHint");
 const voiceStatus = document.querySelector("#voiceStatus");
 const settingsDrawer = document.querySelector("#settingsDrawer");
 const drawerToggle = document.querySelector("#drawerToggle");
 const drawerCloseButton = document.querySelector("#drawerCloseButton");
+const drawerScrim = document.querySelector("#drawerScrim");
 const candidateTemplate = document.querySelector("#candidateTemplate");
-const catAssetTemplate = document.querySelector("#catAssetTemplate");
+const characterAssetTemplate = document.querySelector("#catAssetTemplate");
 
 init();
 
 function init() {
-  renderCatAssets();
+  renderCharacterAssets();
   renderVoicePresetOptions();
   drawCandidates();
   bindEvents();
   prepareVoice();
-  setCatMood("playful");
+  if (!state.selectedCharacterAssetId) {
+    state.selectedCharacterAssetId = builtinCharacterAssets[0].id;
+    persistSelectedCharacterAssetId();
+  }
+  setCharacterMood("playful");
 }
 
 function bindEvents() {
   catButton.addEventListener("click", () => {
     drawCandidates();
     animateExcited();
-    setCatMood("playful");
-    updateSpeech("我已经帮你抽好 3 句啦，挑一句最顺口的吧。");
+    setCharacterMood("playful");
+    updateSpeech("我给你换了 3 句新的开场白。");
   });
 
   drawButton.addEventListener("click", () => {
     drawCandidates();
     animateExcited();
-    setCatMood("playful");
-    updateSpeech("换一组新的看看。");
+    setCharacterMood("playful");
+    updateSpeech("这组不够喜欢的话，我们再换一组。");
   });
 
   phraseForm.addEventListener("submit", (event) => {
@@ -116,12 +138,12 @@ function bindEvents() {
     const mood = customMoodInput.value;
 
     if (!text) {
-      updateSpeech("先写一句你自己的开场白吧。");
+      updateSpeech("先写一句你自己的打招呼方式吧。");
       return;
     }
 
     if (allPhrases().some((item) => item.text === text)) {
-      updateSpeech("这句已经在情话库里啦。");
+      updateSpeech("这句已经在打招呼库里啦。");
       return;
     }
 
@@ -130,8 +152,8 @@ function bindEvents() {
     customPhraseInput.value = "";
     customMoodInput.value = "soft";
     drawCandidates();
-    setCatMood(mood);
-    updateSpeech("这句已经存进情话库里啦。");
+    setCharacterMood(mood);
+    updateSpeech("这句已经加入你的打招呼库。");
   });
 
   catForm.addEventListener("submit", async (event) => {
@@ -139,7 +161,7 @@ function bindEvents() {
     const file = catFileInput.files?.[0];
 
     if (!file) {
-      updateSpeech("先选一张图片，我再帮你存成新的形象。");
+      updateSpeech("先选一张形象图，我再帮你存进去。");
       return;
     }
 
@@ -151,16 +173,16 @@ function bindEvents() {
     try {
       const dataUrl = await readFileAsDataUrl(file);
       const id = createAssetId();
-      state.catAssets.unshift({ id, dataUrl });
-      state.selectedCatAssetId = id;
-      persistCatAssets();
-      persistSelectedCatAssetId();
-      renderCatAssets();
-      applySelectedCatImage();
+      state.characterAssets.unshift({ id, name: file.name.replace(/\.[^.]+$/, ""), dataUrl });
+      state.selectedCharacterAssetId = id;
+      persistCharacterAssets();
+      persistSelectedCharacterAssetId();
+      renderCharacterAssets();
+      applySelectedCharacterImage();
       catFileInput.value = "";
-      updateSpeech("新的形象素材已经保存好啦。");
+      updateSpeech("新的形象素材已经保存好了。");
     } catch {
-      updateSpeech("这张图片暂时没有读进来，换一张再试试。");
+      updateSpeech("这张图片暂时没读进来，换一张再试试。");
     }
   });
 
@@ -168,11 +190,18 @@ function bindEvents() {
     state.selectedVoiceKey = voicePresetSelect.value;
     persistVoiceSelection();
     applyVoiceSelection();
-    updateSpeech("猫猫的声音已经切换好了。");
+    updateSpeech("音色已经切换好了。");
   });
 
-  drawerToggle.addEventListener("click", toggleDrawer);
+  drawerToggle.addEventListener("click", openDrawer);
   drawerCloseButton.addEventListener("click", closeDrawer);
+  drawerScrim.addEventListener("click", closeDrawer);
+
+  window.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      closeDrawer();
+    }
+  });
 
   window.speechSynthesis?.addEventListener?.("voiceschanged", prepareVoice);
 }
@@ -225,51 +254,59 @@ function renderCandidates() {
   });
 }
 
-function renderCatAssets() {
-  catAssetList.innerHTML = "";
-  catAssetCount.textContent = `${state.catAssets.length} 个`;
+function renderCharacterAssets() {
+  characterAssetList.innerHTML = "";
+  const assets = allCharacterAssets();
+  characterAssetCount.textContent = `${assets.length} 个`;
 
-  if (!state.catAssets.length) {
+  if (!assets.length) {
     const empty = document.createElement("div");
     empty.className = "empty-state";
-    empty.textContent = "还没有新增形象，上传一张你喜欢的图片吧。";
-    catAssetList.appendChild(empty);
+    empty.textContent = "还没有新的形象素材，上传一张你喜欢的图吧。";
+    characterAssetList.appendChild(empty);
     return;
   }
 
-  state.catAssets.forEach((asset) => {
-    const fragment = catAssetTemplate.content.cloneNode(true);
+  assets.forEach((asset) => {
+    const fragment = characterAssetTemplate.content.cloneNode(true);
     const previewNode = fragment.querySelector(".asset-preview");
+    const nameNode = fragment.querySelector(".asset-name");
     const deleteButton = fragment.querySelector(".delete-btn");
     const wrapper = fragment.querySelector(".saved-item");
 
-    previewNode.src = asset.dataUrl;
-    if (asset.id === state.selectedCatAssetId) {
+    previewNode.src = asset.dataUrl || asset.src;
+    nameNode.textContent = asset.name;
+    if (asset.id === state.selectedCharacterAssetId) {
       wrapper.classList.add("is-selected");
     }
 
     wrapper.addEventListener("click", () => {
-      state.selectedCatAssetId = asset.id;
-      persistSelectedCatAssetId();
-      applySelectedCatImage();
-      renderCatAssets();
+      state.selectedCharacterAssetId = asset.id;
+      persistSelectedCharacterAssetId();
+      applySelectedCharacterImage();
+      renderCharacterAssets();
       updateSpeech("这套形象已经切换好了。");
     });
 
-    deleteButton.addEventListener("click", (event) => {
-      event.stopPropagation();
-      state.catAssets = state.catAssets.filter((item) => item.id !== asset.id);
-      if (state.selectedCatAssetId === asset.id) {
-        state.selectedCatAssetId = state.catAssets[0]?.id || "";
-      }
-      persistCatAssets();
-      persistSelectedCatAssetId();
-      renderCatAssets();
-      applySelectedCatImage();
-      updateSpeech("这套形象已经删除。");
-    });
+    if (asset.builtin) {
+      deleteButton.hidden = true;
+    } else {
+      deleteButton.hidden = false;
+      deleteButton.addEventListener("click", (event) => {
+        event.stopPropagation();
+        state.characterAssets = state.characterAssets.filter((item) => item.id !== asset.id);
+        if (state.selectedCharacterAssetId === asset.id) {
+          state.selectedCharacterAssetId = builtinCharacterAssets[0]?.id || "";
+        }
+        persistCharacterAssets();
+        persistSelectedCharacterAssetId();
+        renderCharacterAssets();
+        applySelectedCharacterImage();
+        updateSpeech("这套形象已经删除。");
+      });
+    }
 
-    catAssetList.appendChild(fragment);
+    characterAssetList.appendChild(fragment);
   });
 }
 
@@ -277,7 +314,7 @@ function speakPhrase(phrase) {
   stopSpeaking();
   updateSpeech(phrase.text);
   animateExcited();
-  setCatMood(phrase.mood);
+  setCharacterMood(phrase.mood);
 
   if (!("speechSynthesis" in window) || !("SpeechSynthesisUtterance" in window)) {
     updateSpeech(`${phrase.text}（当前浏览器不支持语音播放。）`);
@@ -325,15 +362,15 @@ function updateSpeech(text) {
   speechBubble.classList.add("is-speaking");
 }
 
-function setCatMood(mood) {
+function setCharacterMood(mood) {
   const meta = moodMeta[mood] ?? moodMeta.playful;
   moodPill.textContent = meta.stageLabel;
-  applySelectedCatImage(meta.image);
+  applySelectedCharacterImage(meta.image);
 }
 
-function applySelectedCatImage(fallbackImage = moodMeta.playful.image) {
-  const selectedAsset = state.catAssets.find((item) => item.id === state.selectedCatAssetId);
-  catImage.src = selectedAsset?.dataUrl || fallbackImage;
+function applySelectedCharacterImage(fallbackImage = moodMeta.playful.image) {
+  const selectedAsset = allCharacterAssets().find((item) => item.id === state.selectedCharacterAssetId);
+  catImage.src = selectedAsset?.dataUrl || selectedAsset?.src || fallbackImage;
 }
 
 function animateExcited() {
@@ -343,16 +380,18 @@ function animateExcited() {
   window.setTimeout(() => catButton.classList.remove("is-excited"), 1400);
 }
 
-function toggleDrawer() {
-  const isOpen = settingsDrawer.classList.toggle("is-open");
-  drawerToggle.setAttribute("aria-expanded", String(isOpen));
-  drawerToggle.textContent = isOpen ? "收起设置" : "打开设置";
+function openDrawer() {
+  settingsDrawer.classList.add("is-open");
+  drawerScrim.hidden = false;
+  drawerScrim.classList.add("is-visible");
+  drawerToggle.setAttribute("aria-expanded", "true");
 }
 
 function closeDrawer() {
   settingsDrawer.classList.remove("is-open");
+  drawerScrim.classList.remove("is-visible");
+  drawerScrim.hidden = true;
   drawerToggle.setAttribute("aria-expanded", "false");
-  drawerToggle.textContent = "打开设置";
 }
 
 function prepareVoice() {
@@ -391,7 +430,7 @@ function applyVoiceSelection(voices = window.speechSynthesis?.getVoices?.() ?? [
   }
 
   state.voice =
-    pool.find((voice) => /xiaoxiao|xiaoyi|huihui|female|woman|girl/i.test(voice.name)) ||
+    pool.find((voice) => /xiaoxiao|xiaoyi|huihui|female|woman|girl|xiaomei|xiaoqi/i.test(voice.name)) ||
     pool.find((voice) => voice.lang.toLowerCase().includes("zh") && !/male|man/i.test(voice.name)) ||
     pool[0];
 
@@ -405,6 +444,13 @@ function allPhrases() {
   return [
     ...builtinPhrases.map((item, index) => ({ ...item, id: `builtin-${index}` })),
     ...state.customPhrases
+  ];
+}
+
+function allCharacterAssets() {
+  return [
+    ...builtinCharacterAssets.map((item) => ({ ...item, builtin: true })),
+    ...state.characterAssets
   ];
 }
 
@@ -440,7 +486,7 @@ function createAssetId() {
 }
 
 function currentVoicePreset() {
-  return voicePresets.find((preset) => preset.id === state.selectedVoiceKey) || voicePresets[2];
+  return voicePresets.find((preset) => preset.id === state.selectedVoiceKey) || voicePresets[3];
 }
 
 function loadCustomPhrases() {
@@ -469,29 +515,37 @@ function persistCustomPhrases() {
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state.customPhrases));
 }
 
-function loadCatAssets() {
+function loadCharacterAssets() {
   try {
     const raw = window.localStorage.getItem(CAT_ASSET_KEY);
     if (!raw) {
       return [];
     }
     const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed.filter((item) => item && typeof item.dataUrl === "string") : [];
+    return Array.isArray(parsed)
+      ? parsed
+          .filter((item) => item && typeof item.dataUrl === "string")
+          .map((item) => ({
+            id: item.id || createAssetId(),
+            name: item.name || "我的形象",
+            dataUrl: item.dataUrl
+          }))
+      : [];
   } catch {
     return [];
   }
 }
 
-function persistCatAssets() {
-  window.localStorage.setItem(CAT_ASSET_KEY, JSON.stringify(state.catAssets));
+function persistCharacterAssets() {
+  window.localStorage.setItem(CAT_ASSET_KEY, JSON.stringify(state.characterAssets));
 }
 
-function loadSelectedCatAssetId() {
+function loadSelectedCharacterAssetId() {
   return window.localStorage.getItem(SELECTED_CAT_ASSET_KEY) || "";
 }
 
-function persistSelectedCatAssetId() {
-  window.localStorage.setItem(SELECTED_CAT_ASSET_KEY, state.selectedCatAssetId || "");
+function persistSelectedCharacterAssetId() {
+  window.localStorage.setItem(SELECTED_CAT_ASSET_KEY, state.selectedCharacterAssetId || "");
 }
 
 function loadVoiceSelection() {
