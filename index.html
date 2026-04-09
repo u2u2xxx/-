@@ -21,12 +21,7 @@
     <main class="app-card">
       <section class="hero-panel">
         <div class="title-wrap">
-          <p class="eyebrow">SayHi</p>
-          <h1>让猫猫替你开场，见面不冷场</h1>
-          <p class="subtitle">
-            点一下猫猫，随机抽出 3 句适合初次见面的土味情话。
-            选中一句后，猫猫会切换成匹配语境的状态，再用语音把它说出来。
-          </p>
+          <h1><span class="title-pill">SayHi</span><span class="title-main">见面破冰小助手</span></h1>
         </div>
 
         <div class="stage">
@@ -42,28 +37,23 @@
             <span class="spark spark-c"></span>
             <img id="catImage" src="./assets/cat-neutral.gif" alt="SayHi 猫猫角色" />
           </button>
-        </div>
 
-        <div class="action-row">
-          <button class="secondary-btn" id="drawButton" type="button">重新抽 3 句</button>
-          <button class="secondary-btn" id="stopVoiceButton" type="button">停止播放</button>
-        </div>
+          <div class="floating-candidate-list" id="candidateList"></div>
 
-        <div class="candidate-panel">
-          <div class="panel-head">
-            <h2>今日候选</h2>
-            <p>每次给你 3 句不同气质的开场白，挑一句你最想让猫猫说的。</p>
+          <div class="floating-actions">
+            <button class="secondary-btn draw-floating-btn" id="drawButton" type="button">重新抽 3 句</button>
           </div>
-          <div class="candidate-list" id="candidateList"></div>
+
+          <button class="drawer-toggle" id="drawerToggle" type="button" aria-expanded="false" aria-controls="settingsDrawer">
+            打开设置
+          </button>
         </div>
       </section>
 
-      <aside class="library-panel">
-        <div class="panel-head">
-          <h2>情话库</h2>
-          <p>内置库加入了更多土味开场，也支持你把自己的句子保存进来。</p>
+      <aside class="library-panel" id="settingsDrawer">
+        <div class="drawer-handle-wrap">
+          <span class="drawer-handle"></span>
         </div>
-
         <form class="composer" id="phraseForm">
           <label for="customPhrase">写入一条新的情话存档</label>
           <textarea
@@ -85,21 +75,15 @@
         </form>
 
         <form class="composer" id="catForm">
-          <label for="catMood">上传一张猫猫素材</label>
-          <select id="catMood" name="catMood">
-            <option value="soft">替换温柔甜一点</option>
-            <option value="playful">替换搞笑轻松一点</option>
-            <option value="bold">替换直球上头一点</option>
-          </select>
-
+          <label for="catFile">上传形象素材</label>
           <input id="catFile" name="catFile" type="file" accept="image/*,.gif" />
-          <button class="primary-btn" type="submit">加入我的角色素材库</button>
+          <button class="primary-btn" type="submit">保存为新形象</button>
         </form>
 
         <div class="library-block">
           <div class="library-head">
-            <h3>猫猫素材库</h3>
-            <span id="catAssetCount">3 个槽位</span>
+            <h3>形象素材库</h3>
+            <span id="catAssetCount">0 个</span>
           </div>
           <div class="saved-list" id="catAssetList"></div>
         </div>
@@ -112,77 +96,27 @@
           <div class="voice-picker">
             <label for="voicePresetSelect">选择猫猫声线</label>
             <select id="voicePresetSelect" name="voicePresetSelect"></select>
-            <p class="helper-text" id="voicePresetHint"></p>
           </div>
-        </div>
-
-        <div class="library-block">
-          <div class="library-head">
-            <h3>自定义录音腔</h3>
-            <span id="recordingStatus">未录制</span>
-          </div>
-          <div class="voice-picker">
-            <p class="helper-text">
-              你可以口录一段示范音。选择“我的录音腔”后，点击情话时会播放这段录音样本。
-            </p>
-            <div class="recording-actions">
-              <button class="secondary-btn" id="startRecordingButton" type="button">开始录音</button>
-              <button class="secondary-btn" id="stopRecordingButton" type="button">停止录音</button>
-              <button class="secondary-btn" id="clearRecordingButton" type="button">清除录音</button>
-            </div>
-            <audio id="recordingPreview" controls preload="metadata"></audio>
-          </div>
-        </div>
-
-        <div class="library-block">
-          <div class="library-head">
-            <h3>我的自定义情话</h3>
-            <span id="customCount">0 条</span>
-          </div>
-          <div class="saved-list" id="savedList"></div>
-        </div>
-
-        <div class="library-block tips-block">
-          <h3>猫猫语境</h3>
-          <ul>
-            <li>温柔甜一点：切换为软萌猫猫，适合轻柔破冰。</li>
-            <li>搞笑轻松一点：切换为淡定猫猫，适合自然逗趣。</li>
-            <li>直球上头一点：切换为冲锋猫猫，适合更有梗的出击。</li>
-          </ul>
+          <p class="voice-preset-hint" id="voicePresetHint"></p>
         </div>
       </aside>
     </main>
   </div>
 
   <template id="candidateTemplate">
-    <button class="candidate-card" type="button">
-      <span class="candidate-index"></span>
-      <span class="candidate-main">
-        <span class="candidate-mood"></span>
-        <span class="candidate-text"></span>
-      </span>
+    <button class="candidate-bubble" type="button">
+      <span class="candidate-text"></span>
     </button>
-  </template>
-
-  <template id="savedPhraseTemplate">
-    <article class="saved-item">
-      <div class="saved-main">
-        <span class="saved-mood"></span>
-        <p class="saved-text"></p>
-      </div>
-      <button class="delete-btn" type="button">删除</button>
-    </article>
   </template>
 
   <template id="catAssetTemplate">
     <article class="saved-item">
       <div class="saved-main">
-        <span class="saved-mood"></span>
         <div class="asset-preview-wrap">
           <img class="asset-preview" alt="猫猫素材预览" />
         </div>
       </div>
-      <button class="delete-btn" type="button">恢复默认</button>
+      <button class="delete-btn" type="button">删除</button>
     </article>
   </template>
 
