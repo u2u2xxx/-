@@ -95,11 +95,13 @@ label {
 
 h1 {
   margin-top: 0;
-  font-size: clamp(2rem, 4vw, 3.5rem);
+  font-size: clamp(1.2rem, 2.8vw, 1.7rem);
   line-height: 1.1;
   text-align: center;
-  display: grid;
-  justify-items: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
   gap: 10px;
 }
 
@@ -114,27 +116,18 @@ h1 {
   margin: 0 auto;
 }
 
-.title-pill,
-.title-main {
+.title-pill {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   border-radius: 999px;
   background: rgba(255,255,255,0.9);
   box-shadow: var(--sticker-shadow);
-}
-
-.title-pill {
-  padding: 10px 18px;
-  font-size: clamp(1rem, 2vw, 1.2rem);
+  padding: 12px 18px;
+  min-height: 56px;
+  font-size: clamp(1.2rem, 2.8vw, 1.7rem);
   color: var(--accent-deep);
-  transform: rotate(-4deg);
-}
-
-.title-main {
-  padding: 14px 24px;
   background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(255,241,214,0.94));
-  transform: rotate(1deg);
 }
 
 .stage {
@@ -508,6 +501,22 @@ button:focus-visible {
   height: 6px;
   border-radius: 999px;
   background: rgba(164, 122, 86, 0.3);
+}
+
+.drawer-close-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 10px;
+}
+
+.drawer-close-btn {
+  border: 0;
+  border-radius: 999px;
+  padding: 10px 14px;
+  background: rgba(255,255,255,0.95);
+  color: var(--ink);
+  font-weight: 700;
+  box-shadow: 0 10px 18px rgba(140, 92, 67, 0.1);
 }
 
 .saved-item.is-selected {

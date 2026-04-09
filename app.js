@@ -80,6 +80,7 @@ const voicePresetHint = document.querySelector("#voicePresetHint");
 const voiceStatus = document.querySelector("#voiceStatus");
 const settingsDrawer = document.querySelector("#settingsDrawer");
 const drawerToggle = document.querySelector("#drawerToggle");
+const drawerCloseButton = document.querySelector("#drawerCloseButton");
 const candidateTemplate = document.querySelector("#candidateTemplate");
 const catAssetTemplate = document.querySelector("#catAssetTemplate");
 
@@ -171,6 +172,7 @@ function bindEvents() {
   });
 
   drawerToggle.addEventListener("click", toggleDrawer);
+  drawerCloseButton.addEventListener("click", closeDrawer);
 
   window.speechSynthesis?.addEventListener?.("voiceschanged", prepareVoice);
 }
@@ -347,6 +349,12 @@ function toggleDrawer() {
   drawerToggle.textContent = isOpen ? "收起设置" : "打开设置";
 }
 
+function closeDrawer() {
+  settingsDrawer.classList.remove("is-open");
+  drawerToggle.setAttribute("aria-expanded", "false");
+  drawerToggle.textContent = "打开设置";
+}
+
 function prepareVoice() {
   if (!("speechSynthesis" in window)) {
     voiceStatus.textContent = "当前浏览器不支持 TTS";
@@ -383,7 +391,8 @@ function applyVoiceSelection(voices = window.speechSynthesis?.getVoices?.() ?? [
   }
 
   state.voice =
-    pool.find((voice) => /xiaoxiao|xiaoyi|huihui|female/i.test(voice.name)) ||
+    pool.find((voice) => /xiaoxiao|xiaoyi|huihui|female|woman|girl/i.test(voice.name)) ||
+    pool.find((voice) => voice.lang.toLowerCase().includes("zh") && !/male|man/i.test(voice.name)) ||
     pool[0];
 
   voicePresetSelect.value = state.selectedVoiceKey;
