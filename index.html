@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#ff7d58" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="破冰小程序" />
+  <meta name="format-detection" content="telephone=no" />
+  <title>SayHi | 初见面破冰小助手</title>
+  <link rel="manifest" href="./app.webmanifest" />
+  <link rel="apple-touch-icon" href="./assets/cat-soft.gif" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700&family=ZCOOL+KuaiLe&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <div class="page-shell">
+    <main class="app-card">
+      <section class="hero-panel">
+        <div class="title-wrap">
+          <p class="eyebrow">SayHi</p>
+          <h1>让猫猫替你开场，见面不冷场</h1>
+          <p class="subtitle">
+            点一下猫猫，随机抽出 3 句适合初次见面的土味情话。
+            选中一句后，猫猫会切换成匹配语境的状态，再用语音把它说出来。
+          </p>
+        </div>
+
+        <div class="stage">
+          <div class="speech-bubble" id="speechBubble">
+            <span id="speechText">点点猫猫，我来给你抽一组适合破冰的开场白。</span>
+          </div>
+
+          <div class="mood-pill" id="moodPill">当前状态：待机</div>
+
+          <button class="cat-stage is-idle" id="catButton" type="button" aria-label="点击猫猫随机抽取情话">
+            <span class="spark spark-a"></span>
+            <span class="spark spark-b"></span>
+            <span class="spark spark-c"></span>
+            <img id="catImage" src="./assets/cat-neutral.gif" alt="SayHi 猫猫角色" />
+          </button>
+        </div>
+
+        <div class="action-row">
+          <button class="secondary-btn" id="drawButton" type="button">重新抽 3 句</button>
+          <button class="secondary-btn" id="stopVoiceButton" type="button">停止播放</button>
+        </div>
+
+        <div class="candidate-panel">
+          <div class="panel-head">
+            <h2>今日候选</h2>
+            <p>每次给你 3 句不同气质的开场白，挑一句你最想让猫猫说的。</p>
+          </div>
+          <div class="candidate-list" id="candidateList"></div>
+        </div>
+      </section>
+
+      <aside class="library-panel">
+        <div class="panel-head">
+          <h2>情话库</h2>
+          <p>内置库加入了更多土味开场，也支持你把自己的句子保存进来。</p>
+        </div>
+
+        <form class="composer" id="phraseForm">
+          <label for="customPhrase">写入一条新的情话存档</label>
+          <textarea
+            id="customPhrase"
+            name="customPhrase"
+            rows="4"
+            maxlength="100"
+            placeholder="例如：你好，我本来只想礼貌打个招呼，结果看到你就想顺便心动一下。"
+          ></textarea>
+
+          <label for="customMood">这句更像哪种语气</label>
+          <select id="customMood" name="customMood">
+            <option value="soft">温柔甜一点</option>
+            <option value="playful">搞笑轻松一点</option>
+            <option value="bold">直球上头一点</option>
+          </select>
+
+          <button class="primary-btn" type="submit">加入我的情话库</button>
+        </form>
+
+        <form class="composer" id="catForm">
+          <label for="catMood">上传一张猫猫素材</label>
+          <select id="catMood" name="catMood">
+            <option value="soft">替换温柔甜一点</option>
+            <option value="playful">替换搞笑轻松一点</option>
+            <option value="bold">替换直球上头一点</option>
+          </select>
+
+          <input id="catFile" name="catFile" type="file" accept="image/*,.gif" />
+          <button class="primary-btn" type="submit">加入我的角色素材库</button>
+        </form>
+
+        <div class="library-block">
+          <div class="library-head">
+            <h3>猫猫素材库</h3>
+            <span id="catAssetCount">3 个槽位</span>
+          </div>
+          <div class="saved-list" id="catAssetList"></div>
+        </div>
+
+        <div class="library-block">
+          <div class="library-head">
+            <h3>音色选择</h3>
+            <span id="voiceStatus">准备中</span>
+          </div>
+          <div class="voice-picker">
+            <label for="voicePresetSelect">选择猫猫声线</label>
+            <select id="voicePresetSelect" name="voicePresetSelect"></select>
+            <p class="helper-text" id="voicePresetHint"></p>
+          </div>
+        </div>
+
+        <div class="library-block">
+          <div class="library-head">
+            <h3>自定义录音腔</h3>
+            <span id="recordingStatus">未录制</span>
+          </div>
+          <div class="voice-picker">
+            <p class="helper-text">
+              你可以口录一段示范音。选择“我的录音腔”后，点击情话时会播放这段录音样本。
+            </p>
+            <div class="recording-actions">
+              <button class="secondary-btn" id="startRecordingButton" type="button">开始录音</button>
+              <button class="secondary-btn" id="stopRecordingButton" type="button">停止录音</button>
+              <button class="secondary-btn" id="clearRecordingButton" type="button">清除录音</button>
+            </div>
+            <audio id="recordingPreview" controls preload="metadata"></audio>
+          </div>
+        </div>
+
+        <div class="library-block">
+          <div class="library-head">
+            <h3>我的自定义情话</h3>
+            <span id="customCount">0 条</span>
+          </div>
+          <div class="saved-list" id="savedList"></div>
+        </div>
+
+        <div class="library-block tips-block">
+          <h3>猫猫语境</h3>
+          <ul>
+            <li>温柔甜一点：切换为软萌猫猫，适合轻柔破冰。</li>
+            <li>搞笑轻松一点：切换为淡定猫猫，适合自然逗趣。</li>
+            <li>直球上头一点：切换为冲锋猫猫，适合更有梗的出击。</li>
+          </ul>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <template id="candidateTemplate">
+    <button class="candidate-card" type="button">
+      <span class="candidate-index"></span>
+      <span class="candidate-main">
+        <span class="candidate-mood"></span>
+        <span class="candidate-text"></span>
+      </span>
+    </button>
+  </template>
+
+  <template id="savedPhraseTemplate">
+    <article class="saved-item">
+      <div class="saved-main">
+        <span class="saved-mood"></span>
+        <p class="saved-text"></p>
+      </div>
+      <button class="delete-btn" type="button">删除</button>
+    </article>
+  </template>
+
+  <template id="catAssetTemplate">
+    <article class="saved-item">
+      <div class="saved-main">
+        <span class="saved-mood"></span>
+        <div class="asset-preview-wrap">
+          <img class="asset-preview" alt="猫猫素材预览" />
+        </div>
+      </div>
+      <button class="delete-btn" type="button">恢复默认</button>
+    </article>
+  </template>
+
+  <script src="./app.js"></script>
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./sw.js").catch(() => {});
+      });
+    }
+  </script>
+</body>
+</html>
